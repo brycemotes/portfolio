@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bryce Motes — GIS Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-deep: #063D2E;
+    --green-mid: #0A5C44;
+    --green-bright: #1A9E72;
+    --green-light: #D4EEE4;
+    --green-pale: #EDF7F3;
+    --sand: #F5F0E8;
+    --sand-dark: #E8E0D0;
+    --ink: #111A16;
+    --ink-mid: #2E3D36;
+    --ink-light: #5C7268;
+    --ink-faint: #92ADA4;
+    --white: #FFFFFF;
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+    --radius: 12px;
+    --radius-sm: 6px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font-body); background: var(--sand); color: var(--ink); font-size: 16px; line-height: 1.6; overflow-x: hidden; }
+
+  nav { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--sand-dark); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+  .nav-brand { font-family: var(--font-display); font-size: 18px; color: var(--green-deep); letter-spacing: 0.01em; }
+  .nav-links { display: flex; gap: 0; list-style: none; }
+  .nav-links a { font-size: 13px; font-weight: 400; color: var(--ink-light); text-decoration: none; padding: 0 14px; height: 56px; display: flex; align-items: center; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; }
+  .nav-links a:hover { color: var(--green-deep); border-bottom-color: var(--green-bright); }
+  .nav-contact { font-size: 12px; color: var(--ink-light); display: flex; gap: 16px; }
+  .nav-contact a { color: var(--ink-light); text-decoration: none; transition: color 0.2s; }
+  .nav-contact a:hover { color: var(--green-bright); }
+  @media (max-width: 768px) { .nav-links { display: none; } .nav-contact { display: none; } }
+
+  .hero { background: var(--green-deep); min-height: 90vh; display: flex; flex-direction: column; justify-content: flex-end; padding: 5rem 4rem 5rem; position: relative; overflow: hidden; }
+  .hero-grid-overlay { position: absolute; inset: 0; background-image: linear-gradient(rgba(26,158,114,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(26,158,114,0.08) 1px, transparent 1px); background-size: 48px 48px; pointer-events: none; }
+  .hero-contour { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 80% 30%, rgba(26,158,114,0.12) 0%, transparent 70%), radial-gradient(ellipse 50% 80% at 10% 70%, rgba(10,92,68,0.3) 0%, transparent 60%); pointer-events: none; }
+  .hero-content { position: relative; z-index: 1; max-width: 760px; }
+  .hero-eyebrow { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--green-bright); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 10px; }
+  .hero-eyebrow::before { content: ''; display: block; width: 32px; height: 1px; background: var(--green-bright); }
+  .hero-name { font-family: var(--font-display); font-size: clamp(42px, 7vw, 76px); color: var(--white); line-height: 1.05; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+  .hero-title { font-family: var(--font-display); font-style: italic; font-size: clamp(18px, 3vw, 28px); color: var(--green-light); margin-bottom: 1.75rem; letter-spacing: -0.01em; }
+  .hero-bio { font-size: 16px; color: rgba(212,238,228,0.8); line-height: 1.75; max-width: 560px; margin-bottom: 2.5rem; font-weight: 300; }
+  .hero-stats { display: flex; gap: 3rem; flex-wrap: wrap; padding-top: 2rem; border-top: 1px solid rgba(26,158,114,0.25); }
+  .hero-stat-num { font-family: var(--font-display); font-size: 36px; color: var(--white); display: block; line-height: 1; margin-bottom: 4px; }
+  .hero-stat-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
+  .hero-creds { position: absolute; top: 3rem; right: 4rem; display: flex; flex-direction: column; gap: 8px; z-index: 1; }
+  .hero-cred-pill { background: rgba(26,158,114,0.15); border: 1px solid rgba(26,158,114,0.3); border-radius: 999px; padding: 5px 14px; font-size: 11px; color: var(--green-light); letter-spacing: 0.04em; text-align: center; }
+  @media (max-width: 768px) { .hero { padding: 3rem 1.5rem 4rem; min-height: 80vh; } .hero-creds { display: none; } .hero-stats { gap: 2rem; } }
+
+  .section-wrap { max-width: 1100px; margin: 0 auto; padding: 5rem 2rem; }
+  .section-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 3rem; display: flex; align-items: center; gap: 12px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--sand-dark); }
+
+  .project-row { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; margin-bottom: 6rem; opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .project-row.visible { opacity: 1; transform: translateY(0); }
+  .project-row.reverse { direction: rtl; }
+  .project-row.reverse > * { direction: ltr; }
+
+  .project-img { border-radius: var(--radius); overflow: hidden; aspect-ratio: 16/10; background: var(--white); border: 1px solid var(--sand-dark); position: relative; box-shadow: 0 4px 24px rgba(6,61,46,0.08); }
+  .project-img .bg-blur { position: absolute; inset: 0; background-size: cover; background-position: center; filter: blur(14px) brightness(0.55); transform: scale(1.12); z-index: 0; }
+  .project-img img { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; display: block; }
+  .project-img-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: linear-gradient(135deg, var(--green-pale) 0%, var(--sand) 100%); }
+  .placeholder-icon { width: 48px; height: 48px; border-radius: var(--radius-sm); background: var(--white); border: 1px solid var(--sand-dark); display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(6,61,46,0.08); }
+  .placeholder-icon svg { opacity: 0.4; }
+  .placeholder-text { font-size: 12px; color: var(--ink-faint); letter-spacing: 0.04em; }
+  .placeholder-label { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; background: var(--ink-faint); padding: 2px 8px; border-radius: 4px; color: var(--white); }
+
+  .project-meta { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.75rem; }
+  .project-title { font-family: var(--font-display); font-size: clamp(22px, 3vw, 30px); color: var(--ink); line-height: 1.25; margin-bottom: 1rem; letter-spacing: -0.02em; }
+  .badge-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .badge { font-size: 10px; padding: 3px 10px; border-radius: 999px; font-weight: 500; letter-spacing: 0.04em; }
+  .badge-pub { background: var(--green-light); color: var(--green-deep); }
+  .badge-int { background: #DDE8F5; color: #0C447C; }
+  .badge-both { background: #FAEEDA; color: #633806; }
+  .badge-tool { background: var(--sand-dark); color: var(--ink-mid); }
+  .project-desc { font-size: 15px; color: var(--ink-light); line-height: 1.8; margin-bottom: 1.25rem; font-weight: 300; }
+  .project-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--green-bright); text-decoration: none; font-weight: 500; border-bottom: 1px solid rgba(26,158,114,0.3); padding-bottom: 2px; transition: color 0.2s, border-color 0.2s; }
+  .project-link:hover { color: var(--green-deep); border-color: var(--green-deep); }
+  .project-link-internal { font-size: 12px; color: var(--ink-faint); font-style: italic; }
+
+  @media (max-width: 768px) { .project-row, .project-row.reverse { grid-template-columns: 1fr; direction: ltr; gap: 1.5rem; margin-bottom: 4rem; } }
+
+  .section-divider { border: none; height: 1px; background: var(--sand-dark); margin: 0; }
+
+  .about-section { background: var(--green-deep); padding: 5rem 2rem; }
+  .about-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+  .about-eyebrow { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--green-bright); margin-bottom: 1rem; }
+  .about-heading { font-family: var(--font-display); font-size: 36px; color: var(--white); line-height: 1.2; margin-bottom: 1.5rem; letter-spacing: -0.02em; }
+  .about-body { font-size: 15px; color: rgba(212,238,228,0.75); line-height: 1.85; font-weight: 300; }
+  .about-block { margin-bottom: 2rem; }
+  .about-block-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--green-bright); margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(26,158,114,0.2); }
+  .about-block-item { font-size: 14px; color: rgba(212,238,228,0.8); padding: 6px 0; border-bottom: 1px solid rgba(26,158,114,0.1); font-weight: 300; line-height: 1.5; }
+  .about-block-item:last-child { border-bottom: none; }
+  .about-block-item strong { color: var(--white); font-weight: 500; display: block; font-size: 13px; }
+  @media (max-width: 768px) { .about-inner { grid-template-columns: 1fr; gap: 3rem; } .about-heading { font-size: 28px; } }
+
+  footer { background: var(--ink); padding: 2.5rem 2rem; text-align: center; }
+  .footer-inner { max-width: 600px; margin: 0 auto; }
+  .footer-name { font-family: var(--font-display); font-size: 22px; color: var(--white); margin-bottom: 0.5rem; }
+  .footer-contact { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-top: 1rem; }
+  .footer-contact a { font-size: 14px; color: var(--ink-faint); text-decoration: none; transition: color 0.2s; }
+  .footer-contact a:hover { color: var(--green-bright); }
+  .footer-copy { margin-top: 1.5rem; font-size: 11px; color: #3A4A44; }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-brand">Bryce Motes</span>
+  <ul class="nav-links">
+    <li><a href="#summerville">Summerville</a></li>
+    <li><a href="#charleston">Charleston County</a></li>
+    <li><a href="#union">Union County</a></li>
+    <li><a href="#withersravenel">WithersRavenel</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+  <div class="nav-contact">
+    <a href="tel:9044491421">(904) 449-1421</a>
+    <a href="mailto:motesdb@gmail.com">motesdb@gmail.com</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid-overlay"></div>
+  <div class="hero-contour"></div>
+  <div class="hero-creds">
+    <div class="hero-cred-pill">FAA Part 107 Certified Drone Pilot</div>
+    <div class="hero-cred-pill">M.S. Environmental &amp; Sustainable Studies</div>
+    <div class="hero-cred-pill">B.A. Environmental Studies</div>
+  </div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">GIS Portfolio</p>
+    <h1 class="hero-name">Bryce Motes</h1>
+    <p class="hero-title">Web GIS Specialist &amp; Consultant</p>
+    <p class="hero-bio">I partner with local governments to extend their GIS programs with modern web-based tools — building on the ESRI platform they already invest in to create applications that work for both staff and the public. My background in environmental and sustainable studies informs every project I take on.</p>
+    <div class="hero-stats">
+      <div><span class="hero-stat-num">13+</span><span class="hero-stat-label">Projects</span></div>
+      <div><span class="hero-stat-num">4</span><span class="hero-stat-label">Agencies</span></div>
+      <div><span class="hero-stat-num">2</span><span class="hero-stat-label">States</span></div>
+      <div><span class="hero-stat-num">3</span><span class="hero-stat-label">Gov. Types</span></div>
+    </div>
+  </div>
+</section>
+
+<div id="summerville">
+<div class="section-wrap">
+  <p class="section-label">Town of Summerville, SC &mdash; Lead GIS Coordinator &amp; Drone Pilot</p>
+
+  <div class="project-row">
+    <div class="project-img">
+      <div class="bg-blur" style="background-image:url('images/01_summerville_hub.jpg')"></div>
+      <img src="images/01_summerville_hub.jpg" alt="Town of Summerville sign">
+    </div>
+    <div class="project-content">
+      <p class="project-meta">Town of Summerville, SC &middot; Township</p>
+      <h2 class="project-title">Summerville's first public GIS Hub Site</h2>
+      <div class="badge-row"><span class="badge badge-pub">Public-facing</span><span class="badge badge-tool">ArcGIS Hub</span></div>
+      <p class="project-desc">Built the town's first public-facing GIS presence from the ground up — creating a central destination where residents can explore local data, download GIS datasets, and access all web applications in one place. Established Summerville as a data-transparent community and gave GIS a visible role in town government.</p>
+      <a class="project-link" href="https://gis-summervillescgov.hub.arcgis.com/" target="_blank">View live site ↗</a>
+    </div>
+  </div>
+
+  <div class="project-row reverse">
+    <div class="project-img">
+      <div class="bg-blur" style="background-image:url('images/02_dev_dashboard.jpg')"></div>
+      <img src="images/02_dev_dashboard.jpg" alt="Summerville Development Projects Dashboard">
+    </div>
+    <div class="project-content">
+      <p class="project-meta">Town of Summerville, SC &middot; Township</p>
+      <h2 class="project-title">Development projects dashboard</h2>
+      <div class="badge-row"><span class="badge badge-pub">Public-facing</span><span class="badge badge-tool">ArcGIS Dashboards</span></div>
+      <p class="project-desc">Gave residents a live window into development activity across town by connecting directly to planning department records. Citizens can check the status of projects in their neighborhood — whether newly permitted, under construction, or completed — bringing transparency to a process that was previously difficult to track.</p>
+      <a class="project-link" href="https://summervillescgov.maps.arcgis.com/apps/dashboards/c388b71efa4344568268303a16144f95" target="_blank">View live app ↗</a>
+    </div>
+  </div>
+
+  <div class="project-row">
+    <div class="project-img">
+      <div class="bg-blur" style="background-image:url('images/03_road_issues.jpg')"></div>
+      <img src="images/03_road_issues.jpg" alt="Road Issues Reporter">
+    </div>
+    <div class="project-content">
+      <p class="project-meta">Town of Summerville, SC &middot; Township</p>
+      <h2 class="project-title">Road issues reporter</h2>
+      <div class="badge-row"><span class="badge badge-both">Internal + Public</span><span class="badge badge-tool">Survey 123</span><span class="badge badge-tool">ArcGIS Online</span></div>
+      <p class="project-desc">A public-facing reporting tool allowing residents to submit road condition issues directly — with submissions routed to the correct agency based on road ownership across Summerville's three-county coverage area. Reduced misdirected citizen calls and improved coordination between town and county road crews.</p>
+      <a class="project-link" href="https://gis-summervillescgov.hub.arcgis.com/apps/734b1fd3fb55469f868bb67740545e92/explore" target="_blank">View live app ↗</a>
+    </div>
+  </div>
+
+  <div class="project-row reverse">
+    <div class="project-img">
+      <div class="bg-blur" style="background-image:url('images/04_tree_inventory.jpg')"></div>
+      <img src="images/04_tree_inventory.jpg" alt="Tree Canopy Inventory">
+    </div>
+    <div class="project-content">
+      <p class="project-meta">Town of Summerville, SC &middot; Township</p>
+      <h2 class="project-title">Tree canopy inventory &amp; public explorer</h2>
+      <div class="badge-row"><span class="badge badge-both">Internal + Public</span><span class="badge badge-tool">Field Maps</span><span class="badge badge-tool">Experience Builder</span><span class="badge badge-tool">ArcGIS Hub</span></div>
+      <p class="project-desc">Led a full-cycle project from field data collection to public application. Designed a Field Maps workflow for interns to inventory all park trees with spatial locations and detailed attributes. The collected data was then published as an interactive public explorer on the Hub Site — reinforcing Summerville's identity as a tree community and its motto "within the Pine Trees."</p>
+    </div>
+  </div>
+
+  <div class="project-row">
+    <div class="project-img">
+      <div class="bg-blur" style="background-image:url('images/05_building_footprints.jpg')"></div>
+      <img src="images/05_building_footprints.jpg" alt="Building Footprints Deep Learning">
+    </div>
+    <div class="project-content">
+      <p class="project-meta">Town of Summerville, SC &middot; Township</p>
+      <h2 class="project-title">Building footprint construction using deep learning</h2>
+      <div class="badge-row"><span class="badge badge-int">Internal</span><span class="badge badge-tool">ArcGIS Deep Learning</span><span class="badge badge-tool">ArcGIS Pro</span></div>
+      <p class="project-desc">Developed a deep learning model to construct building footprints across the entire town boundary, covering 2016 through 2023. The model was built for perpetual use — designed to run annually so building footprint data stays current as the town grows. A foundational dataset now used across multiple internal planning and analysis workflows.</p>
+    </div>
+  </div>
+
+  <div class="project-row reverse">
+    <div class="project-img">
+      <div class="bg-blur" style="background-image:url('images/06_impervious.jpg')"></div>
+      <img src="images/06_impervious.jpg" alt="Impervious Surface Analysis">
+    </div>
+    <div class="project-content">
+      <p class="project-meta">Town of Summerville, SC &middot; Township</p>
+      <h2 class="project-title">Impervious surface analysis — flood-prone neighborhoods</h2>
+      <div class="badge-row"><span class="badge badge-int">Internal</span><span class="badge badge-tool">Image Classification</span><span class="badge badge-tool">ArcGIS Pro</span></div>
+      <p class="project-desc">Applied image classification techniques to calculate the percentage of impervious surfaces per parcel in flood-prone neighborhoods across Summerville. Provided planners and stormwater staff with parcel-level data to better understand runoff risk and inform targeted drainage and land use decisions in the town's most vulnerable areas.</p>
+    </div>
+  </div>
+
+  <div class="project-row">
+    <div class="project-img">
+      <div class="bg-blur" style="background-image:url('images/07_addressing.jpg')"></div>
+      <img src="images/07_addressing.jpg" alt="Addressing Process Reconfiguration">
+    </div>
+    <div class="project-content">
+      <p class="project-meta">Town of Summerville, SC &middot; Township</p>
+      <h2 class="project-title">Addressing process reconfiguration</h2>
+      <div class="badge-row"><span class="badge badge-int">Internal</span><span class="badge badge-tool">ArcGIS Enterprise</span><span class="badge badge-tool">Third-party Permitting Integration</span></div>
+      <p class="project-desc">Reconfigured the town's addressing workflow to integrate directly with third-party permitting software — streamlining the creation of multiple addresses simultaneously and adding automated warnings for applicants about properties located in critical zones such as flood plains and easements. Reduced manual steps and improved accuracy at the point of permit submission.</p>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<hr class="section-divider">
+
+<div id="charleston">
+<div class="section-wrap">
+  <p class="section-label">Charleston County, SC &mdash; GIS Technician</p>
+
+  <div class="project-row">
+    <div class="project-img">
+      <div class="bg-blur" style="background-image:url('images/08_climate_equity.jpg')"></div>
+      <img src="images/08_climate_equity.jpg" alt="Climate Equity Index">
+    </div>
+    <div class="project-content">
+      <p class="project-meta">Charleston County, SC &middot; County</p>
+      <h2 class="project-title">Climate Equity Index</h2>
+      <div class="badge-row"><span class="badge badge-pub">Public-facing</span><span class="badge badge-tool">ArcGIS Online</span><span class="badge badge-tool">Experience Builder</span></div>
+      <p class="project-desc">Partnered with Charleston County's Sustainability Department to produce a Climate Equity Index — a public-facing ArcGIS Online application identifying the communities most affected by climate change across the county. Gave residents and policymakers a spatial lens into environmental vulnerability and helped the county advance its equity and sustainability commitments.</p>
+    </div>
+  </div>
+
+  <div class="project-row reverse">
+    <div class="project-img">
+      <div class="bg-blur" style="background-image:url('images/09_greenbelt.jpg')"></div>
+      <img src="images/09_greenbelt.jpg" alt="Charleston County Greenbelt">
+    </div>
+    <div class="project-content">
+      <p class="project-meta">Charleston County, SC &middot; County</p>
+      <h2 class="project-title">Greenbelt land conservation application</h2>
+      <div class="badge-row"><span class="badge badge-both">Internal + Public</span><span class="badge badge-tool">Survey 123</span><span class="badge badge-tool">ArcGIS Online</span></div>
+      <p class="project-desc">Rebuilt the county's conservation fund application process — replacing an outdated external Google form with a polished Survey 123 experience hosted within Charleston County's existing ESRI license. Public organizations can now apply for land conservation funds online, while the Greenbelt department manages and reviews all submissions entirely within the ESRI ecosystem.</p>
+      <a class="project-link" href="https://charleston-county-gis-chascogis.hub.arcgis.com/apps/ebcd59a0b54a4373a5488f4b99c638a9/explore" target="_blank">View live app ↗</a>
+    </div>
+  </div>
+
+  <div class="project-row">
+    <div class="project-img">
+      <div class="bg-blur" style="background-image:url('images/10_adopt_highway.jpg')"></div>
+      <img src="images/10_adopt_highway.jpg" alt="Adopt a Highway">
+    </div>
+    <div class="project-content">
+      <p class="project-meta">Charleston County, SC &middot; County</p>
+      <h2 class="project-title">Adopt a Highway program</h2>
+      <div class="badge-row"><span class="badge badge-pub">Public-facing</span><span class="badge badge-tool">ArcGIS Online</span><span class="badge badge-tool">ArcGIS StoryMaps</span></div>
+      <p class="project-desc">Built a public application supporting Charleston County's Adopt a Highway program — giving community members and organizations a spatial view of available highway segments, participation details, and program information. Extended the county's transparency efforts and made community stewardship more accessible.</p>
+      <a class="project-link" href="https://charleston-county-gis-chascogis.hub.arcgis.com/apps/d6be7ec0c7ff40d482e4cf658e0086df/explore" target="_blank">View live app ↗</a>
+    </div>
+  </div>
+
+  <div class="project-row reverse">
+    <div class="project-img">
+      <div class="bg-blur" style="background-image:url('images/11_plat_search.jpg')"></div>
+      <img src="images/11_plat_search.jpg" alt="Plat Search Story Map">
+    </div>
+    <div class="project-content">
+      <p class="project-meta">Charleston County, SC &middot; County</p>
+      <h2 class="project-title">Plat search instructions — Story Map</h2>
+      <div class="badge-row"><span class="badge badge-pub">Public-facing</span><span class="badge badge-tool">ArcGIS StoryMaps</span></div>
+      <p class="project-desc">Created a guided Story Map walkthrough explaining how to navigate and use Charleston County's plat search tool — turning a confusing process into a clear, self-service experience. Reduced citizen confusion and cut down on support calls to the county by putting clear, step-by-step guidance directly in residents' hands.</p>
+      <a class="project-link" href="https://storymaps.arcgis.com/stories/0cdc6778a7904972a24f190ac9b7a1c4" target="_blank">View Story Map ↗</a>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<hr class="section-divider">
+
+<div id="union">
+<div class="section-wrap">
+  <p class="section-label">Union County, NC &mdash; GIS Analyst, Water Department</p>
+
+  <div class="project-row">
+    <div class="project-img">
+      <div class="bg-blur" style="background-image:url('images/12_water_sewer.jpg')"></div>
+      <img src="images/12_water_sewer.jpg" alt="Water and Sewer Asset Viewer">
+    </div>
+    <div class="project-content">
+      <p class="project-meta">Union County, NC &middot; County &middot; Water Department</p>
+      <h2 class="project-title">Water &amp; sewer assets viewer within portal environment</h2>
+      <div class="badge-row"><span class="badge badge-int">Internal</span><span class="badge badge-tool">Experience Builder Dev Edition</span><span class="badge badge-tool">ArcGIS Enterprise Portal</span></div>
+      <p class="project-desc">Led the full modernization of the Water Department's primary GIS tool — replacing an aging internal web map with a multi-page application built using Experience Builder Developer Edition within the department's portal environment. Used daily by field crews and office staff, the app serves as the department's central GIS hub with dedicated pages for locating water and sewer assets, monitoring local weather, tracking active construction projects, and a home page connecting staff to all GIS products created by the department.</p>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<hr class="section-divider">
+
+<div id="withersravenel">
+<div class="section-wrap">
+  <p class="section-label">WithersRavenel &mdash; GIS Analyst I</p>
+
+  <div class="project-row">
+    <div class="project-img">
+      <div class="bg-blur" style="background-image:url('images/13_lsli.jpg')"></div>
+      <img src="images/13_lsli.jpg" alt="Lead Service Line Inventory">    </div>
+    <div class="project-content">
+      <p class="project-meta">WithersRavenel &middot; Private Sector &middot; Multiple NC Municipalities</p>
+      <h2 class="project-title">Lead Service Line Inventory — EPA compliance</h2>
+      <div class="badge-row"><span class="badge badge-pub">Public-facing</span><span class="badge badge-tool">ArcGIS Online</span><span class="badge badge-tool">Web Maps</span></div>
+      <p class="project-desc">Contributed to the nationwide Lead Service Line Inventory initiative by managing and standardizing utility datasets for municipalities across North Carolina to meet EPA requirements. Developed public-facing web maps in ArcGIS Online to communicate service line data clearly to residents — supporting municipalities in meeting federal compliance deadlines while keeping their communities informed.</p>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div style="max-width:1100px;margin:0 auto;padding:0 2rem 5rem;text-align:center;">
+  <p style="font-size:16px;color:var(--ink-light);font-weight:300;line-height:1.7;">
+    Check out this podcast I was on talking about the work I've done —
+    <a href="https://www.youtube.com/watch?v=521djXPNGjE" target="_blank" style="color:var(--green-bright);text-decoration:none;font-weight:500;border-bottom:1px solid rgba(26,158,114,0.3);padding-bottom:2px;">listen here ↗</a>
+  </p>
+</div>
+
+<section class="about-section" id="about">
+  <div class="about-inner">
+    <div class="about-left">
+      <p class="about-eyebrow">About</p>
+      <h2 class="about-heading">Connecting environmental knowledge to GIS solutions</h2>
+      <p class="about-body">I'm a GIS specialist with a background rooted in environmental and sustainable studies — which means I bring both the technical skills and the subject matter understanding that local government GIS work demands. From flood zone analysis and land conservation to public transparency tools and utility asset management, my work spans the full range of challenges that townships, municipalities, and counties face every day.<br><br>I partner with agencies to build on the ESRI tools they already have — extending their capacity to do more for staff and the public without starting from scratch. Whether it's a modern public Hub Site, an internal field operations tool, or a data collection workflow, I bring the same collaborative approach to every engagement.</p>
+    </div>
+    <div class="about-right">
+      <div class="about-block">
+        <p class="about-block-label">Education</p>
+        <div class="about-block-item">
+          <strong>M.S. Environmental &amp; Sustainable Studies</strong>
+          College of Charleston &middot; 2019–2021<br>
+          <em style="font-size:13px;color:rgba(212,238,228,0.5);">Thesis: Recommendations for Land Conservation on Johns Island, for the Kiawah Conservancy</em>
+        </div>
+        <div class="about-block-item">
+          <strong>B.A. Environmental Studies</strong>
+          Wofford College &middot; 2014–2018
+        </div>
+      </div>
+      <div class="about-block">
+        <p class="about-block-label">Certifications</p>
+        <div class="about-block-item">
+          <strong>FAA Part 107 Remote Pilot Certificate</strong>
+          Certified commercial drone pilot — aerial data collection for GIS purposes
+        </div>
+      </div>
+      <div class="about-block">
+        <p class="about-block-label">Core tools &amp; skills</p>
+        <div class="about-block-item">ArcGIS Online &middot; ArcGIS Hub &middot; Experience Builder</div>
+        <div class="about-block-item">ArcGIS Enterprise &middot; Experience Builder Dev Edition</div>
+        <div class="about-block-item">Survey 123 &middot; Field Maps &middot; ArcGIS Dashboards</div>
+        <div class="about-block-item">ArcGIS StoryMaps &middot; ArcGIS Pro</div>
+        <div class="about-block-item">Deep Learning &middot; Image Classification &middot; Drone Data Collection</div>
+      </div>
+      <div class="about-block">
+        <p class="about-block-label">Contact</p>
+        <div class="about-block-item"><strong>Phone</strong>(904) 449-1421</div>
+        <div class="about-block-item"><strong>Email</strong>motesdb@gmail.com</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <p class="footer-name">Bryce Motes</p>
+    <p style="font-size:13px;color:#5C7268;margin-top:4px;">GIS Specialist &amp; Consultant</p>
+    <div class="footer-contact">
+      <a href="tel:9044491421">(904) 449-1421</a>
+      <a href="mailto:motesdb@gmail.com">motesdb@gmail.com</a>
+    </div>
+    <p class="footer-copy">GIS Portfolio &mdash; Bryce Motes</p>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.project-row').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
